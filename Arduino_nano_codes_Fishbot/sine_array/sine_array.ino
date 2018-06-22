@@ -19,8 +19,10 @@ bool newData = false;
 //***********************************************************************
 
 int i = 0,j=0;
-int select1=0;//initialize 0 i.e. forward motion for select1 variable.
-int select2=0;
+int select1=3;//initialize 0 i.e. forward motion for select1 variable.
+int select2=3;
+int select_pectoral=0; 
+
 
 
 int angle_array[4][8]={
@@ -49,9 +51,17 @@ void setup() {
 
   //servo1.attach(4);
   servo2.attach(5); 
-  servo3.attach(6); 
-  //servo4.attach(7); 
+  servo3.attach(6);
+  servo1.attach(4); 
+  servo4.attach(7); 
+//  servo4.attach(7); 
+
+//  servo1.write(90);
+  //servo4.write(90);
+  delay(150);
 }
+
+
 void loop() {
   // put your main code here, to run repeatedly:
 
@@ -60,9 +70,47 @@ void loop() {
   
   servo2.write(angle_array[select1][i]);
   servo3.write(angle_array[select2][i]);
-  i++;
-  if(i>7)i=0;
-  delay(200);
+
+/*
+if (select_pectoral==1 && right ==1 )
+{
+  servo1.write(45);
+  servo4.write(135);
+  }
+if (select_pectoral==1 && left ==1 )
+{
+  servo1.write(135);
+  servo4.write(45);
+
+  }
+ */
+
+if (select1==0)
+{
+  servo1.write(90);
+  servo4.write(90);
+  }
+if (select1==1)
+{
+  servo1.write(45);
+  servo4.write(45);  
+}
+if (select1==2)
+
+{
+  servo1.write(135);
+  servo4.write(135); 
+}
+
+else if(select1==0)
+{
+  servo1.write(90);
+  servo4.write(90);
+  }
+  
+i++;
+if(i>7)i=0;
+delay(200);
   
 
 
@@ -87,6 +135,9 @@ void showData() {
              Serial.println("Forward");
              select1 = 0;
              select2 = 0;
+             select_pectoral=0; 
+             servo1.attach(4); 
+             servo4.attach(7);
              Forward();
           }
         else if(dataReceived == 'B')
@@ -98,6 +149,9 @@ void showData() {
             Serial.println("Right"); 
             select1 = 1;
             select2 = 0;
+            select_pectoral=1;
+            servo1.attach(4); 
+            servo4.attach(7);
             Right();        
         }
         else if(dataReceived == 'L')
@@ -105,13 +159,20 @@ void showData() {
             Serial.println("Left");
             select1 = 2;
             select2 = 0;
+            select_pectoral=1;
+            servo1.attach(4); 
+            servo4.attach(7);
             Left();         
         }
         else if(dataReceived == 'S')
         {
             Serial.println("Switch pressed: STOP");
             select1 = 3;   
-            select2 = 3;      
+            select2 = 3;            
+            select_pectoral=0;
+            servo1.detach();
+            servo4.detach();
+      
         }
         else if(dataReceived == '9')
         {
