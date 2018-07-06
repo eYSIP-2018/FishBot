@@ -1,0 +1,9 @@
+G20
+(Absolute Coordinates)
+G90
+G00 X0.0000 Y0.0000 
+M03
+G04 P3.000000
+G00 Z0.5000 
+M05
+M02
