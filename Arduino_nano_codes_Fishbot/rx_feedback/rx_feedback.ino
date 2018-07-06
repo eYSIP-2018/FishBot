@@ -15,20 +15,25 @@ const byte address[6] = "00001"; //5 Byte address of nrf device
 
 char dataReceived; // this must match dataToSend in the TX
 bool newData = false;
+char dataToSend;
+char txNum = '0';
+int incomingByte =0;
 
 //***********************************************************************
 
 int i = 0,j=0;
-int select1=3;//initialize 0 i.e. forward motion for select1 variable.
-int select2=3;
+int select1=3;//initialize stop motion of middle body .
+int select2=3;//initialize stop motion of Tail .
 int select_pectoral=0; 
-
+char previous='p';
+char current='c';
+int detach_flag=0;
 
 
 int angle_array[4][8]={
-  { 30, 60, 90, 120, 150, 120, 90, 60},     //forward
-  { 30, 60, 30,60, 30, 60, 30, 60},         //right turn
-  { 120, 150, 120,150, 120, 150, 120,150 }, //left turn
+  { 60, 75, 90, 105, 120, 105, 90, 75},     //forward
+  { 60, 75, 60,75, 60, 75, 60, 75},         //right turn
+  { 105, 120, 105,120, 105, 120, 105,120 }, //left turn
   { 90, 90, 90, 90, 90, 90, 90, 90}         //stop
   };
 
@@ -50,15 +55,15 @@ void setup() {
   radio.setDataRate(RF24_250KBPS);
 
   //servo1.attach(4);
-  servo2.attach(5); 
-  servo3.attach(6);
-  servo1.attach(4); 
-  servo4.attach(7); 
+  servo2.attach(4); 
+  servo3.attach(5);
+  servo1.attach(3); 
+  servo4.attach(6); 
 //  servo4.attach(7); 
 
-//  servo1.write(90);
-  //servo4.write(90);
-  delay(150);
+ servo1.write(90);
+ servo4.write(90);
+ delay(150);
 }
 
 
@@ -84,35 +89,46 @@ if (select_pectoral==1 && left ==1 )
 
   }
  */
+ if (current != previous)
+{detach_flag=0;}
 
-if (select1==0)
+if (select1==0 && detach_flag==0)
 {
   servo1.write(90);
   servo4.write(90);
+  detach_flag=1;
   }
-if (select1==1)
+if (select1==1 && detach_flag==0)
 {
   servo1.write(45);
   servo4.write(45);  
+  detach_flag=1;
 }
-if (select1==2)
+if (select1==2 && detach_flag==0)
 
 {
   servo1.write(135);
-  servo4.write(135); 
+  servo4.write(135);
+  detach_flag=1; 
 }
 
-else if(select1==0)
+else if(select1==0 && detach_flag==0)
 {
   servo1.write(90);
   servo4.write(90);
+  detach_flag=1;
   }
   
 i++;
 if(i>7)i=0;
 delay(200);
-  
 
+
+previous = current;
+
+
+if (detach_flag==1)
+{detach_pectoral();}
 
 }
 
@@ -122,6 +138,8 @@ void getData() {
     if ( radio.available() ) {
         radio.read( &dataReceived, sizeof(dataReceived) );
         newData = true;
+        current = dataReceived;
+        
     }
 }
 
@@ -136,9 +154,9 @@ void showData() {
              select1 = 0;
              select2 = 0;
              select_pectoral=0; 
-             servo1.attach(4); 
-             servo4.attach(7);
-             Forward();
+             servo1.attach(3); 
+             servo4.attach(6);
+             
           }
         else if(dataReceived == 'B')
         {
@@ -150,9 +168,9 @@ void showData() {
             select1 = 1;
             select2 = 0;
             select_pectoral=1;
-            servo1.attach(4); 
-            servo4.attach(7);
-            Right();        
+            servo1.attach(3); 
+            servo4.attach(6);
+                    
         }
         else if(dataReceived == 'L')
         {
@@ -160,9 +178,9 @@ void showData() {
             select1 = 2;
             select2 = 0;
             select_pectoral=1;
-            servo1.attach(4); 
-            servo4.attach(7);
-            Left();         
+            servo1.attach(3); 
+            servo4.attach(6);
+                    
         }
         else if(dataReceived == 'S')
         {
@@ -199,3 +217,9 @@ void send() {
         Serial.println("  Tx failed");
     }*/
 }
+
+void detach_pectoral()
+{
+  servo1.detach();
+  servo4.detach();
+  }
