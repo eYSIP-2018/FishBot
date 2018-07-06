@@ -2,7 +2,7 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-#define led 13
+
 Servo servo1; 
 Servo servo2;
 Servo servo3;
